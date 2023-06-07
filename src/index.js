@@ -17,13 +17,13 @@ import getDataForOrderEmail from "./util/getDataForOrderEmail.js";
  */
 export default async function register(app) {
   await app.registerPlugin({
-    label: "Orders",
-    name: "orders",
+    label: "sub-orders",
+    name: "sub-orders",
     version: pkg.version,
     i18n,
     collections: {
-      Orders: {
-        name: "Orders",
+      SubOrders: {
+        name: "SubOrders",
         indexes: [
           // Create indexes. We set specific names for backwards compatibility
           // with indexes created by the aldeed:schema-index Meteor package.
@@ -42,21 +42,21 @@ export default async function register(app) {
       }
     },
     functionsByType: {
-      getDataForOrderEmail: [getDataForOrderEmail],
-      preStartup: [preStartup],
+      // getDataForOrderEmail: [getDataForOrderEmail],
+      // preStartup: [preStartup],
       startup: [startup]
     },
     graphQL: {
-      resolvers,
+      // resolvers,
       schemas
     },
-    mutations,
-    queries,
-    policies,
-    simpleSchemas: {
-      Order,
-      OrderFulfillmentGroup,
-      OrderItem
-    }
+    // mutations,
+    // queries,
+    // policies,
+    // simpleSchemas: {
+    //   Order,
+    //   OrderFulfillmentGroup,
+    //   OrderItem
+    // }
   });
 }
