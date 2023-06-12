@@ -1,192 +1,188 @@
 extend type OrderItem {
-  subOrders:[OrderItem]
+  subOrders:[SubOrderItem]
 }
-# extend type Query {
+extend type Query {
 
-#   getOrderShippingByAddress(
-#     input:getOrderShippingByAddressInput
-#   ):FlatRateFulfillmentMethod
+  "Get a sub order by its ID"
+  suborderById(
+    "The order ID"
+    id: ID!
 
-#   "Get an order by its ID"
-#   orderById(
-#     "The order ID"
-#     id: ID!
+    "The shop that owns the order"
+    shopId: ID!
 
-#     "The shop that owns the order"
-#     shopId: ID!
+    "A valid anonymous access token for this order. Required if the order is not linked with an account."
+    token: String
+  ): Order
 
-#     "A valid anonymous access token for this order. Required if the order is not linked with an account."
-#     token: String
-#   ): Order
+  "Get all sub orders for a single account, optionally limited to certain shop IDs and certain orderStatus"
+  suborders(
+    "Filters to apply to a list of orders"
+    filters: OrderFilterInput
 
-#   "Get all orders for a single account, optionally limited to certain shop IDs and certain orderStatus"
-#   orders(
-#     "Filters to apply to a list of orders"
-#     filters: OrderFilterInput
+    "Provide a list of shop IDs from which you want to get orders from"
+    shopIds: [ID]
 
-#     "Provide a list of shop IDs from which you want to get orders from"
-#     shopIds: [ID]
+    "Return only results that come after this cursor. Use this with `first` to specify the number of results to return."
+    after: ConnectionCursor
 
-#     "Return only results that come after this cursor. Use this with `first` to specify the number of results to return."
-#     after: ConnectionCursor
+    "Return only results that come before this cursor. Use this with `last` to specify the number of results to return."
+    before: ConnectionCursor
 
-#     "Return only results that come before this cursor. Use this with `last` to specify the number of results to return."
-#     before: ConnectionCursor
+    "Return at most this many results. This parameter may be used with either `after` or `offset` parameters."
+    first: ConnectionLimitInt
 
-#     "Return at most this many results. This parameter may be used with either `after` or `offset` parameters."
-#     first: ConnectionLimitInt
+    "Return at most this many results. This parameter may be used with the `before` parameter."
+    last: ConnectionLimitInt
 
-#     "Return at most this many results. This parameter may be used with the `before` parameter."
-#     last: ConnectionLimitInt
+    "Return only results that come after the Nth result. This parameter may be used with the `first` parameter."
+    offset: Int
 
-#     "Return only results that come after the Nth result. This parameter may be used with the `first` parameter."
-#     offset: Int
+    "Return results sorted in this order"
+    sortOrder: SortOrder = desc
 
-#     "Return results sorted in this order"
-#     sortOrder: SortOrder = desc
+    "By default, orders are sorted by when they were created, newest first. Set this to sort by one of the other allowed fields"
+    sortBy: OrdersSortByField = createdAt
+  ): OrderConnection!
 
-#     "By default, orders are sorted by when they were created, newest first. Set this to sort by one of the other allowed fields"
-#     sortBy: OrdersSortByField = createdAt
-#   ): OrderConnection!
+  "Get all orders for a single account, optionally limited to certain shop IDs and certain orderStatus"
+  ordersByAccountId(
+    "Limit to orders placed by this account"
+    accountId: ID!
 
-#   "Get all orders for a single account, optionally limited to certain shop IDs and certain orderStatus"
-#   ordersByAccountId(
-#     "Limit to orders placed by this account"
-#     accountId: ID!
+    "Limit to orders with one of these statuses"
+    orderStatus: [String]
 
-#     "Limit to orders with one of these statuses"
-#     orderStatus: [String]
+    "Limit to orders owned by one of these shops"
+    shopIds: [ID]!
 
-#     "Limit to orders owned by one of these shops"
-#     shopIds: [ID]!
+    "Return only results that come after this cursor. Use this with `first` to specify the number of results to return."
+    after: ConnectionCursor
 
-#     "Return only results that come after this cursor. Use this with `first` to specify the number of results to return."
-#     after: ConnectionCursor
+    "Return only results that come before this cursor. Use this with `last` to specify the number of results to return."
+    before: ConnectionCursor
 
-#     "Return only results that come before this cursor. Use this with `last` to specify the number of results to return."
-#     before: ConnectionCursor
+    "Return at most this many results. This parameter may be used with either `after` or `offset` parameters."
+    first: ConnectionLimitInt
 
-#     "Return at most this many results. This parameter may be used with either `after` or `offset` parameters."
-#     first: ConnectionLimitInt
+    "Return at most this many results. This parameter may be used with the `before` parameter."
+    last: ConnectionLimitInt
 
-#     "Return at most this many results. This parameter may be used with the `before` parameter."
-#     last: ConnectionLimitInt
+    "Return only results that come after the Nth result. This parameter may be used with the `first` parameter."
+    offset: Int
 
-#     "Return only results that come after the Nth result. This parameter may be used with the `first` parameter."
-#     offset: Int
+    "Return results sorted in this order"
+    sortOrder: SortOrder = desc
 
-#     "Return results sorted in this order"
-#     sortOrder: SortOrder = desc
+    "By default, orders are sorted by when they were created, newest first. Set this to sort by one of the other allowed fields"
+    sortBy: OrdersByAccountIdSortByField = createdAt
+  ): OrdersByAccountIdConnection!
 
-#     "By default, orders are sorted by when they were created, newest first. Set this to sort by one of the other allowed fields"
-#     sortBy: OrdersByAccountIdSortByField = createdAt
-#   ): OrdersByAccountIdConnection!
+  "Get an order by its reference ID (the ID shown to customers)"
+  suborderByReferenceId(
+    "The order reference ID (the ID shown to customers)"
+    id: ID!
 
-#   "Get an order by its reference ID (the ID shown to customers)"
-#   orderByReferenceId(
-#     "The order reference ID (the ID shown to customers)"
-#     id: ID!
+    "The shop that owns the order"
+    shopId: ID!
 
-#     "The shop that owns the order"
-#     shopId: ID!
+    "A valid anonymous access token for this order. Required if the order is not linked with an account."
+    token: String
+  ): Order
 
-#     "A valid anonymous access token for this order. Required if the order is not linked with an account."
-#     token: String
-#   ): Order
+  # "Get refunds applied to an sub order by order ID"
+  # refunds(
+  #   "The order ID"
+  #   orderId: ID!
 
-#   "Get refunds applied to an order by order ID"
-#   refunds(
-#     "The order ID"
-#     orderId: ID!
+  #   "The shop that owns the order"
+  #   shopId: ID!
 
-#     "The shop that owns the order"
-#     shopId: ID!
+  #   "A valid anonymous access token for this order. Required if the order is not linked with an account."
+  #   token: String
+  # ): [Refund]
 
-#     "A valid anonymous access token for this order. Required if the order is not linked with an account."
-#     token: String
-#   ): [Refund]
+  # "Get refunds applied to a specific payment by payment ID"
+  # refundsByPaymentId(
+  #   "The order ID"
+  #   orderId: ID!
 
-#   "Get refunds applied to a specific payment by payment ID"
-#   refundsByPaymentId(
-#     "The order ID"
-#     orderId: ID!
+  #   "The ID of one of the payments made for this order"
+  #   paymentId: ID!
 
-#     "The ID of one of the payments made for this order"
-#     paymentId: ID!
+  #   "The shop that owns the order"
+  #   shopId: ID!
 
-#     "The shop that owns the order"
-#     shopId: ID!
+  #   "A valid anonymous access token for this order. Required if the order is not linked with an account."
+  #   token: String
+  # ): [Refund]
+}
 
-#     "A valid anonymous access token for this order. Required if the order is not linked with an account."
-#     token: String
-#   ): [Refund]
-# }
+extend type Mutation {
+  """
+  Use this mutation to add a new order fulfillment group to an order. It must have at least one
+  item. Items may be provided or moved from another existing group or both.
+  """
+  addOrderFulfillmentGroup(
+    "Mutation input"
+    input: AddOrderFulfillmentGroupInput!
+  ): AddOrderFulfillmentGroupPayload!
 
-# extend type Mutation {
-#   """
-#   Use this mutation to add a new order fulfillment group to an order. It must have at least one
-#   item. Items may be provided or moved from another existing group or both.
-#   """
-#   addOrderFulfillmentGroup(
-#     "Mutation input"
-#     input: AddOrderFulfillmentGroupInput!
-#   ): AddOrderFulfillmentGroupPayload!
+  """
+  Use this mutation to cancel one item of an order, either for the full ordered quantity
+  or for a partial quantity. If partial, the item will be split into two items and the
+  original item will have a lower quantity and will be canceled.
 
-#   """
-#   Use this mutation to cancel one item of an order, either for the full ordered quantity
-#   or for a partial quantity. If partial, the item will be split into two items and the
-#   original item will have a lower quantity and will be canceled.
+  If this results in all items in a fulfillment group being canceled, the group will also
+  be canceled. If this results in all fulfillment groups being canceled, the full order will
+  also be canceled.
+  """
+  cancelOrderItem(
+    "Mutation input"
+    input: CancelOrderItemInput!
+  ): CancelOrderItemPayload!
 
-#   If this results in all items in a fulfillment group being canceled, the group will also
-#   be canceled. If this results in all fulfillment groups being canceled, the full order will
-#   also be canceled.
-#   """
-#   cancelOrderItem(
-#     "Mutation input"
-#     input: CancelOrderItemInput!
-#   ): CancelOrderItemPayload!
+  # "Use this mutation to create a refund on a payment method used to make the order"
+  # createRefund("Mutation input" input: CreateRefundInput!): CreateRefundPayload!
 
-#   "Use this mutation to create a refund on a payment method used to make the order"
-#   createRefund("Mutation input" input: CreateRefundInput!): CreateRefundPayload!
+  # """
+  # Use this mutation to move one or more items between existing order fulfillment groups.
+  # """
+  # moveOrderItems(
+  #   "Mutation input"
+  #   input: MoveOrderItemsInput!
+  # ): MoveOrderItemsPayload!
 
-#   """
-#   Use this mutation to move one or more items between existing order fulfillment groups.
-#   """
-#   moveOrderItems(
-#     "Mutation input"
-#     input: MoveOrderItemsInput!
-#   ): MoveOrderItemsPayload!
+  # """
+  # Use this mutation to place an order, providing information necessary to pay for it.
+  # The order will be placed only if authorization is successful for all submitted payments.
+  # """
+  # placeOrder("Mutation input" input: PlaceOrderInput!): PlaceOrderPayload!
 
-#   """
-#   Use this mutation to place an order, providing information necessary to pay for it.
-#   The order will be placed only if authorization is successful for all submitted payments.
-#   """
-#   placeOrder("Mutation input" input: PlaceOrderInput!): PlaceOrderPayload!
+  # """
+  # Use this mutation to reduce the quantity of one item of an order and create
+  # a new item for the remaining quantity in the same fulfillment group, and with the
+  # same item status. You may want to do this if you are only able to partially fulfill
+  # the item order right now.
+  # """
+  # splitOrderItem(
+  #   "Mutation input"
+  #   input: SplitOrderItemInput!
+  # ): SplitOrderItemPayload!
 
-#   """
-#   Use this mutation to reduce the quantity of one item of an order and create
-#   a new item for the remaining quantity in the same fulfillment group, and with the
-#   same item status. You may want to do this if you are only able to partially fulfill
-#   the item order right now.
-#   """
-#   splitOrderItem(
-#     "Mutation input"
-#     input: SplitOrderItemInput!
-#   ): SplitOrderItemPayload!
+  """
+  Use this mutation to update order details after the order has been placed.
+  """
+  updateSubOrder("Mutation input" input: UpdateOrderInput!): UpdateOrderPayload!
 
-#   """
-#   Use this mutation to update order details after the order has been placed.
-#   """
-#   updateOrder("Mutation input" input: UpdateOrderInput!): UpdateOrderPayload!
-
-#   """
-#   Use this mutation to update an order fulfillment group status and tracking information.
-#   """
-#   updateOrderFulfillmentGroup(
-#     "Mutation input"
-#     input: UpdateOrderFulfillmentGroupInput!
-#   ): UpdateOrderFulfillmentGroupPayload!
-# }
+  # """
+  # Use this mutation to update an order fulfillment group status and tracking information.
+  # """
+  # updateOrderFulfillmentGroup(
+  #   "Mutation input"
+  #   input: UpdateOrderFulfillmentGroupInput!
+  # ): UpdateOrderFulfillmentGroupPayload!
+}
 
 # "Allowed values for the `OrderFulfillmentGroupItems` sortBy parameter"
 # enum OrderFulfillmentGroupItemsSortByField {
@@ -197,267 +193,267 @@ extend type OrderItem {
 #   addedAt
 # }
 
-# "The fields by which you are allowed to sort any query that returns a `OrdersByAccountIdConnection`"
-# enum OrdersByAccountIdSortByField {
-#   "Sort by the order ID"
-#   _id
+"The fields by which you are allowed to sort any query that returns a `OrdersByAccountIdConnection`"
+enum OrdersByAccountIdSortByField {
+  "Sort by the order ID"
+  _id
 
-#   "Sort by the date and time when the order was placed"
-#   createdAt
-# }
+  "Sort by the date and time when the order was placed"
+  createdAt
+}
 
-# "The fields by which you are allowed to sort any query that returns a `OrderConnection`"
-# enum OrdersSortByField {
-#   "Sort by the order ID"
-#   _id
+"The fields by which you are allowed to sort any query that returns a `OrderConnection`"
+enum OrdersSortByField {
+  "Sort by the order ID"
+  _id
 
-#   "Sort by the date and time when the order was placed"
-#   createdAt
-# }
+  "Sort by the date and time when the order was placed"
+  createdAt
+}
 
-# """
-# Wraps a list of `Order`s, providing pagination cursors and information.
+"""
+Wraps a list of `Order`s, providing pagination cursors and information.
 
-# For information about what Relay-compatible connections are and how to use them, see the following articles:
-# - [Relay Connection Documentation](https://facebook.github.io/relay/docs/en/graphql-server-specification.html#connections)
-# - [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm)
-# - [Using Relay-style Connections With Apollo Client](https://www.apollographql.com/docs/react/recipes/pagination.html)
-# """
-# type OrderConnection {
-#   "The list of nodes that match the query, wrapped in an edge to provide a cursor string for each"
-#   edges: [OrderEdge]
+For information about what Relay-compatible connections are and how to use them, see the following articles:
+- [Relay Connection Documentation](https://facebook.github.io/relay/docs/en/graphql-server-specification.html#connections)
+- [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm)
+- [Using Relay-style Connections With Apollo Client](https://www.apollographql.com/docs/react/recipes/pagination.html)
+"""
+type OrderConnection {
+  "The list of nodes that match the query, wrapped in an edge to provide a cursor string for each"
+  edges: [OrderEdge]
 
-#   """
-#   You can request the `nodes` directly to avoid the extra wrapping that `NodeEdge` has,
-#   if you know you will not need to paginate the results.
-#   """
-#   nodes: [Order]
+  """
+  You can request the `nodes` directly to avoid the extra wrapping that `NodeEdge` has,
+  if you know you will not need to paginate the results.
+  """
+  nodes: [Order]
 
-#   "Information to help a client request the next or previous page"
-#   pageInfo: PageInfo!
+  "Information to help a client request the next or previous page"
+  pageInfo: PageInfo!
 
-#   "The total number of nodes that match your query"
-#   totalCount: Int!
-# }
+  "The total number of nodes that match your query"
+  totalCount: Int!
+}
 
-# """
-# Wraps a list of `Order`s, providing pagination cursors and information.
+"""
+Wraps a list of `Order`s, providing pagination cursors and information.
 
-# For information about what Relay-compatible connections are and how to use them, see the following articles:
-# - [Relay Connection Documentation](https://facebook.github.io/relay/docs/en/graphql-server-specification.html#connections)
-# - [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm)
-# - [Using Relay-style Connections With Apollo Client](https://www.apollographql.com/docs/react/recipes/pagination.html)
-# """
-# type OrdersByAccountIdConnection {
-#   "The list of nodes that match the query, wrapped in an edge to provide a cursor string for each"
-#   edges: [OrdersByAccountIdEdge]
+For information about what Relay-compatible connections are and how to use them, see the following articles:
+- [Relay Connection Documentation](https://facebook.github.io/relay/docs/en/graphql-server-specification.html#connections)
+- [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm)
+- [Using Relay-style Connections With Apollo Client](https://www.apollographql.com/docs/react/recipes/pagination.html)
+"""
+type OrdersByAccountIdConnection {
+  "The list of nodes that match the query, wrapped in an edge to provide a cursor string for each"
+  edges: [OrdersByAccountIdEdge]
 
-#   """
-#   You can request the `nodes` directly to avoid the extra wrapping that `NodeEdge` has,
-#   if you know you will not need to paginate the results.
-#   """
-#   nodes: [Order]
+  """
+  You can request the `nodes` directly to avoid the extra wrapping that `NodeEdge` has,
+  if you know you will not need to paginate the results.
+  """
+  nodes: [Order]
 
-#   "Information to help a client request the next or previous page"
-#   pageInfo: PageInfo!
+  "Information to help a client request the next or previous page"
+  pageInfo: PageInfo!
 
-#   "The total number of nodes that match your query"
-#   totalCount: Int!
-# }
+  "The total number of nodes that match your query"
+  totalCount: Int!
+}
 
-# "A connection edge in which each node is a `Order` object"
-# type OrderEdge implements NodeEdge {
-#   "The cursor that represents this node in the paginated results"
-#   cursor: ConnectionCursor!
+"A connection edge in which each node is a `Order` object"
+type OrderEdge implements NodeEdge {
+  "The cursor that represents this node in the paginated results"
+  cursor: ConnectionCursor!
 
-#   "The order"
-#   node: Order
-# }
+  "The order"
+  node: Order
+}
 
-# "A connection edge in which each node is a `Order` object"
-# type OrdersByAccountIdEdge implements NodeEdge {
-#   "The cursor that represents this node in the paginated results"
-#   cursor: ConnectionCursor!
+"A connection edge in which each node is a `Order` object"
+type OrdersByAccountIdEdge implements NodeEdge {
+  "The cursor that represents this node in the paginated results"
+  cursor: ConnectionCursor!
 
-#   "The order"
-#   node: Order
-# }
+  "The order"
+  node: Order
+}
 
-# """
-# Wraps a list of `OrderItem`s, providing pagination cursors and information.
+"""
+Wraps a list of `OrderItem`s, providing pagination cursors and information.
 
-# For information about what Relay-compatible connections are and how to use them, see the following articles:
-# - [Relay Connection Documentation](https://facebook.github.io/relay/docs/en/graphql-server-specification.html#connections)
-# - [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm)
-# - [Using Relay-style Connections With Apollo Client](https://www.apollographql.com/docs/react/recipes/pagination.html)
-# """
-# type OrderItemConnection {
-#   "The list of nodes that match the query, wrapped in an edge to provide a cursor string for each"
-#   edges: [OrderItemEdge]
+For information about what Relay-compatible connections are and how to use them, see the following articles:
+- [Relay Connection Documentation](https://facebook.github.io/relay/docs/en/graphql-server-specification.html#connections)
+- [Relay Connection Specification](https://facebook.github.io/relay/graphql/connections.htm)
+- [Using Relay-style Connections With Apollo Client](https://www.apollographql.com/docs/react/recipes/pagination.html)
+"""
+type OrderItemConnection {
+  "The list of nodes that match the query, wrapped in an edge to provide a cursor string for each"
+  edges: [OrderItemEdge]
 
-#   """
-#   You can request the `nodes` directly to avoid the extra wrapping that `NodeEdge` has,
-#   if you know you will not need to paginate the results.
-#   """
-#   nodes: [OrderItem]
+  """
+  You can request the `nodes` directly to avoid the extra wrapping that `NodeEdge` has,
+  if you know you will not need to paginate the results.
+  """
+  nodes: [OrderItem]
 
-#   "Information to help a client request the next or previous page"
-#   pageInfo: PageInfo!
+  "Information to help a client request the next or previous page"
+  pageInfo: PageInfo!
 
-#   "The total number of nodes that match your query"
-#   totalCount: Int!
-# }
+  "The total number of nodes that match your query"
+  totalCount: Int!
+}
 
-# "A connection edge in which each node is a `OrderItem` object"
-# type OrderItemEdge implements NodeEdge {
-#   "The cursor that represents this node in the paginated results"
-#   cursor: ConnectionCursor!
+"A connection edge in which each node is a `OrderItem` object"
+type OrderItemEdge implements NodeEdge {
+  "The cursor that represents this node in the paginated results"
+  cursor: ConnectionCursor!
 
-#   "The order item"
-#   node: OrderItem
-# }
+  "The order item"
+  node: OrderItem
+}
 
-# "One attribute of an order item"
-# type OrderItemAttribute {
-#   "The attribute label, e.g., Color"
-#   label: String
+"One attribute of an order item"
+type OrderItemAttribute {
+  "The attribute label, e.g., Color"
+  label: String
 
-#   "The attribute value, e.g., Blue"
-#   value: String
-# }
+  "The attribute value, e.g., Blue"
+  value: String
+}
 
-# "A summary of the totals for this order"
-# type OrderSummary {
-#   "The total of all discounts applied, as a positive number"
-#   discountTotal: Money!
+"A summary of the totals for this order"
+type OrderSummary {
+  "The total of all discounts applied, as a positive number"
+  discountTotal: Money!
 
-#   "The calculated tax-exclusive tax rate on all items and fulfillment prices (taxTotal / taxableAmount)"
-#   effectiveTaxRate: Rate!
+  "The calculated tax-exclusive tax rate on all items and fulfillment prices (taxTotal / taxableAmount)"
+  effectiveTaxRate: Rate!
 
-#   "The total price of all chosen fulfillment methods"
-#   fulfillmentTotal: Money!
+  "The total price of all chosen fulfillment methods"
+  fulfillmentTotal: Money!
 
-#   "The combined prices of all cart items"
-#   itemTotal: Money!
+  "The combined prices of all cart items"
+  itemTotal: Money!
 
-#   "The total estimated tax that has not already been included in the item prices"
-#   taxTotal: Money!
+  "The total estimated tax that has not already been included in the item prices"
+  taxTotal: Money!
 
-#   "The total amount that was deemed taxable by the tax service"
-#   taxableAmount: Money!
+  "The total amount that was deemed taxable by the tax service"
+  taxableAmount: Money!
 
-#   "The sum of `itemTotal`, `fulfillmentTotal`, and `taxTotal`, minus `discountTotal`"
-#   total: Money!
-# }
+  "The sum of `itemTotal`, `fulfillmentTotal`, and `taxTotal`, minus `discountTotal`"
+  total: Money!
+}
 
-# extend type uploadedBy {
-# billingAddress:Address 
-# email:String
-# }
-# """
-# A single item in an order. The item contains information about a purchase.
-# """
-# type OrderItem implements Node {
+extend type uploadedBy {
+billingAddress:Address 
+email:String
+}
+"""
+A single item in an order. The item contains information about a purchase.
+"""
+type SubOrderItem implements Node {
 
-#   "Seller Info"
-#   uploadedBy :uploadedBy
+  "Seller Info"
+  uploadedBy :uploadedBy
 
-#   "The order item ID"
-#   _id: ID!
+  "The order item ID"
+  _id: ID!
 
-#   """
-#   "
-#   The date and time at which this item was first added to the associated cart.
-#   If an item is added, removed, and then added again, this will reflect the most recent addition.
-#   However, if an item is added twice, the quantity will increase but this date will remain
-#   the initial added date.
-#   """
-#   addedAt: DateTime
+  """
+  "
+  The date and time at which this item was first added to the associated cart.
+  If an item is added, removed, and then added again, this will reflect the most recent addition.
+  However, if an item is added twice, the quantity will increase but this date will remain
+  the initial added date.
+  """
+  addedAt: DateTime
 
-#   """
-#   FUTURE. Additional attributes of the chosen item. For example, if this item is for a product, socks, where `blue` and `small`
-#   options were chosen for some configurable attributes, then `color:blue` and `size:small` will be indicated here.
-#   """
-#   attributes: [OrderItemAttribute]
+  """
+  FUTURE. Additional attributes of the chosen item. For example, if this item is for a product, socks, where `blue` and `small`
+  options were chosen for some configurable attributes, then `color:blue` and `size:small` will be indicated here.
+  """
+  attributes: [OrderItemAttribute]
 
-#   "If this order item is canceled, the reason for cancelation, if provided"
-#   cancelReason: String
+  "If this order item is canceled, the reason for cancelation, if provided"
+  cancelReason: String
 
-#   "The date and time at which the order item was created"
-#   createdAt: DateTime!
+  "The date and time at which the order item was created"
+  createdAt: DateTime!
 
-#   "The URLs for a picture of the item in various sizes"
-#   imageURLs: ImageSizes
+  "The URLs for a picture of the item in various sizes"
+  imageURLs: ImageSizes
 
-#   "Arbitrary additional metadata about this cart item."
-#   metafields: [Metafield]
+  "Arbitrary additional metadata about this cart item."
+  metafields: [Metafield]
 
-#   "The short title of the associated option, if this is an option item"
-#   optionTitle: String
+  "The short title of the associated option, if this is an option item"
+  optionTitle: String
 
-#   "Packing information such as item weight, height, length, and depth. Used for calculating shipping rates."
-#   parcel: ShippingParcel
+  "Packing information such as item weight, height, length, and depth. Used for calculating shipping rates."
+  parcel: ShippingParcel
 
-#   "The price of the item at the time of purchase"
-#   price: Money!
+  "The price of the item at the time of purchase"
+  price: Money!
 
-#   "The product and chosen options"
-#   productConfiguration: ProductConfiguration!
+  "The product and chosen options"
+  productConfiguration: ProductConfiguration!
 
-#   "The product's slug"
-#   productSlug: String
+  "The product's slug"
+  productSlug: String
 
-#   "The list of tags that have been applied to this product"
-#   productTags(
-#     "Return only results that come after this cursor. Use this with `first` to specify the number of results to return."
-#     after: ConnectionCursor
+  "The list of tags that have been applied to this product"
+  productTags(
+    "Return only results that come after this cursor. Use this with `first` to specify the number of results to return."
+    after: ConnectionCursor
 
-#     "Return only results that come before this cursor. Use this with `last` to specify the number of results to return."
-#     before: ConnectionCursor
+    "Return only results that come before this cursor. Use this with `last` to specify the number of results to return."
+    before: ConnectionCursor
 
-#     "Return at most this many results. This parameter may be used with either `after` or `offset` parameters."
-#     first: ConnectionLimitInt
+    "Return at most this many results. This parameter may be used with either `after` or `offset` parameters."
+    first: ConnectionLimitInt
 
-#     "Return at most this many results. This parameter may be used with the `before` parameter."
-#     last: ConnectionLimitInt
+    "Return at most this many results. This parameter may be used with the `before` parameter."
+    last: ConnectionLimitInt
 
-#     "Return only results that come after the Nth result. This parameter may be used with the `first` parameter."
-#     offset: Int
+    "Return only results that come after the Nth result. This parameter may be used with the `first` parameter."
+    offset: Int
 
-#     "Return results sorted in this order"
-#     sortOrder: SortOrder = asc
+    "Return results sorted in this order"
+    sortOrder: SortOrder = asc
 
-#     "By default, tags are sorted by ID. Set this to sort by one of the other allowed fields"
-#     sortBy: TagSortByField = _id
-#   ): TagConnection
+    "By default, tags are sorted by ID. Set this to sort by one of the other allowed fields"
+    sortBy: TagSortByField = _id
+  ): TagConnection
 
-#   "The type of product, used to display cart items differently"
-#   productType: String
+  "The type of product, used to display cart items differently"
+  productType: String
 
-#   "The product vendor"
-#   productVendor: String
+  "The product vendor"
+  productVendor: String
 
-#   "The quantity of this item that has been added to the cart. This must be a positive integer. Remove this `CartItem` from it's associated cart if you want `0` of this item."
-#   quantity: Int!
+  "The quantity of this item that has been added to the cart. This must be a positive integer. Remove this `CartItem` from it's associated cart if you want `0` of this item."
+  quantity: Int!
 
-#   "The shop associated with this cart item."
-#   shop: Shop!
+  "The shop associated with this cart item."
+  shop: Shop!
 
-#   "The machine-readable order item status."
-#   status: String!
+  "The machine-readable order item status."
+  status: String!
 
-#   "The price of the item multiplied by the quantity of this item ordered"
-#   subtotal: Money!
+  "The price of the item multiplied by the quantity of this item ordered"
+  subtotal: Money!
 
-#   "A title for use in orders that conveys the selected product's title + chosen options"
-#   title: String!
+  "A title for use in orders that conveys the selected product's title + chosen options"
+  title: String!
 
-#   "The date and time at which this item was last updated"
-#   updatedAt: DateTime!
+  "The date and time at which this item was last updated"
+  updatedAt: DateTime!
 
-#   "The selected variant title"
-#   variantTitle: String
-# }
+  "The selected variant title"
+  variantTitle: String
+}
 
 # """
 # Extra data for an order fulfillment group with type `shipping`

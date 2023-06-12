@@ -54,7 +54,8 @@ async function createChildOrders(context, order) {
       const childOrder = {
         ...order,
         _id: Random.id(),
-        referenceId: Random.id(),
+        sellerId:key,
+        referenceId: order.referenceId,
         shipping: childFulfillmentGroup,
         totalItemQuantity: childFulfillmentGroup.reduce((sum, group) => sum + group.totalItemQuantity, 0),
 

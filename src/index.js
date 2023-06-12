@@ -30,7 +30,6 @@ export default async function register(app) {
           [{ accountId: 1, shopId: 1 }],
           [{ createdAt: -1 }, { name: "c2_createdAt" }],
           [{ email: 1 }, { name: "c2_email" }],
-          [{ referenceId: 1 }, { unique: true }],
           [{ shopId: 1 }, { name: "c2_shopId" }],
           [{ "shipping.items.productId": 1 }],
           [{ "shipping.items.variantId": 1 }],
