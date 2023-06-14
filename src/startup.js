@@ -80,10 +80,10 @@ async function createChildOrders(context, order) {
  * @method updateChildOrdersStatus
  * @summary Us this methode to update status of subOrders an order is status is changed
  * @param {Object} context - an object containing the per-request state
- * @param {Object} order - Order object emitted by afterOrderUpdate
- * @param {String} itemId - itemId emitted by afterOrderUpdate
- * @param {String} sellerId - sellerId  emitted by afterOrderUpdate
- * @param {String} status - status  emitted by afterOrderUpdate
+ * @param {Object} order - Order object emitted by afterOrderStatusUpdate
+ * @param {String} itemId - itemId emitted by afterOrderStatusUpdate
+ * @param {String} sellerId - sellerId  emitted by afterOrderStatusUpdate
+ * @param {String} status - status  emitted by afterOrderStatusUpdate
  * @returns {Promise<Object>} Object with `order` property containing the created order
  */
 
@@ -193,7 +193,7 @@ export default function ordersStartup(context) {
 
       createChildOrders(context, order)
     });
-    appEvents.on("afterOrderUpdate", ({ order, itemId, sellerId, status }) => {
+    appEvents.on("afterOrderStatusUpdate", ({ order, itemId, sellerId, status }) => {
       console.log("==================== Updating sub Order Status ==================");
 
       updateChildOrdersStatus(context, order, itemId, sellerId, status)
