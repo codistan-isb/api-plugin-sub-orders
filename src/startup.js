@@ -11,11 +11,14 @@ import updateGroupStatusFromItemStatus from "./util/updateGroupStatusFromItemSta
  */
 async function createChildOrders(context, order) {
   try {
-    const { collections } = context;
-    const { SubOrders, Cart } = collections;
-    const parentFulfillmentGroup = order?.shipping?.[0]
 
+    const { collections } = context;
+    const { SubOrders, Cart,Accounts,Shops } = collections;
+    
+    const parentFulfillmentGroup = order?.shipping?.[0]
     const orderItems = order?.shipping?.[0]?.items;
+    
+
     let sellerOrders = {};
     orderItems?.map(order => {
 
@@ -29,8 +32,8 @@ async function createChildOrders(context, order) {
         sellerOrders[order.sellerId] = sellerOrder
       }
     })
-    console.log("sellerOrders", sellerOrders)
-    Object.keys(sellerOrders).map(async (key) => {
+    console.log("sellerOrders", sellerOrders);
+    Object.keys(sellerOrders).map(async (key,i) => {
 
 
       const childItem = sellerOrders[key];
@@ -56,7 +59,9 @@ async function createChildOrders(context, order) {
         invoice: childInvoice
 
       }
-      const childFulfillmentGroup = [fulfillmentObj]
+      const childFulfillmentGroup = [fulfillmentObj];
+      const startFrom='a';
+      
       const childOrder = {
         ...order,
         _id: Random.id(),
@@ -65,6 +70,8 @@ async function createChildOrders(context, order) {
         referenceId: order.referenceId,
         shipping: childFulfillmentGroup,
         totalItemQuantity: childFulfillmentGroup.reduce((sum, group) => sum + group.totalItemQuantity, 0),
+        internalOrderId:order?.internalOrderId + ("-"+i),
+
 
       }
       // OrderSchema.validate(childOrder);
