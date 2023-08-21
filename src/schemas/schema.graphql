@@ -375,6 +375,7 @@ type SubOrderItem implements Node {
   options were chosen for some configurable attributes, then `color:blue` and `size:small` will be indicated here.
   """
   attributes: [OrderItemAttribute]
+  internalOrderId:String
 
   "If this order item is canceled, the reason for cancelation, if provided"
   cancelReason: String
