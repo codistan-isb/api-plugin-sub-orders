@@ -32,12 +32,12 @@ async function createChildOrders(context, order) {
         sellerOrders[order.sellerId] = sellerOrder
       }
     })
-    console.log("sellerOrders", sellerOrders);
     Object.keys(sellerOrders).map(async (key,i) => {
 
 
       const childItem = sellerOrders[key];
-      const itemTotal = +accounting.toFixed(childItem.reduce((sum, item) => (sum + item.subtotal), 0), 3);
+      childItem?.map((item,j)=>{
+      const itemTotal = +accounting.toFixed(item.subtotal, 3);
 
       // Fulfillment
       const shippingTotal = parentFulfillmentGroup.shipmentMethod.rate || 0;
@@ -53,30 +53,29 @@ async function createChildOrders(context, order) {
       let fulfillmentObj = {
         ...parentFulfillmentGroup,
         _id: Random.id(),
-        items: childItem,
-        itemIds: childItem.map(item => item._id),
-        totalItemQuantity: childItem.reduce((sum, item) => sum + item.quantity, 0),
+        items: [item],
+        itemIds: item._id,
+        totalItemQuantity: 1,
         invoice: childInvoice
 
       }
       const childFulfillmentGroup = [fulfillmentObj];
-      const startFrom='a';
       
       const childOrder = {
         ...order,
         _id: Random.id(),
         sellerId: key,
-        itemIds: childItem.map(item => item._id),
+        itemIds: item._id,
         referenceId: order.referenceId,
         shipping: childFulfillmentGroup,
         totalItemQuantity: childFulfillmentGroup.reduce((sum, group) => sum + group.totalItemQuantity, 0),
-        internalOrderId:order?.internalOrderId + ("-"+i),
+        internalOrderId:order?.internalOrderId + (String.fromCharCode(97 + j))+String.fromCharCode(97 + i),
 
 
       }
       // OrderSchema.validate(childOrder);
       SubOrders.insertOne({ ...childOrder, parentId: order._id });
-
+    })
     })
   }
   catch (err) {
