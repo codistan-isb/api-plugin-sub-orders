@@ -54,7 +54,7 @@ async function createChildOrders(context, order) {
         ...parentFulfillmentGroup,
         _id: Random.id(),
         items: [item],
-        itemIds: item._id,
+        itemIds: [item._id],
         totalItemQuantity: 1,
         invoice: childInvoice
 
@@ -65,7 +65,7 @@ async function createChildOrders(context, order) {
         ...order,
         _id: Random.id(),
         sellerId: key,
-        itemIds: item._id,
+        itemIds: [item._id],
         referenceId: order.referenceId,
         shipping: childFulfillmentGroup,
         totalItemQuantity: childFulfillmentGroup.reduce((sum, group) => sum + group.totalItemQuantity, 0),
