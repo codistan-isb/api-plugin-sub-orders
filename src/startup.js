@@ -69,7 +69,7 @@ async function createChildOrders(context, order) {
         referenceId: order.referenceId,
         shipping: childFulfillmentGroup,
         totalItemQuantity: childFulfillmentGroup.reduce((sum, group) => sum + group.totalItemQuantity, 0),
-        internalOrderId:order?.internalOrderId + (String.fromCharCode(97 + j))+String.fromCharCode(97 + i),
+        internalOrderId:order?.internalOrderId + (String.fromCharCode(97 + i))+String.fromCharCode(97 + j),
 
 
       }
