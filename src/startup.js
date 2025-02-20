@@ -13,11 +13,11 @@ async function createChildOrders(context, order) {
   try {
 
     const { collections } = context;
-    const { SubOrders, Cart,Accounts,Shops } = collections;
-    
+    const { SubOrders, Cart, Accounts, Shops } = collections;
+
     const parentFulfillmentGroup = order?.shipping?.[0]
     const orderItems = order?.shipping?.[0]?.items;
-    
+
 
     let sellerOrders = {};
     orderItems?.map(order => {
@@ -32,50 +32,50 @@ async function createChildOrders(context, order) {
         sellerOrders[order.sellerId] = sellerOrder
       }
     })
-    Object.keys(sellerOrders).map(async (key,i) => {
+    Object.keys(sellerOrders).map(async (key, i) => {
 
 
       const childItem = sellerOrders[key];
-      childItem?.map((item,j)=>{
-      const itemTotal = +accounting.toFixed(item.subtotal, 3);
+      childItem?.map((item, j) => {
+        const itemTotal = +accounting.toFixed(item.subtotal, 3);
 
-      // Fulfillment
-      const shippingTotal = parentFulfillmentGroup.shipmentMethod.rate || 0;
-      const handlingTotal = parentFulfillmentGroup.shipmentMethod.handling || 0;
-      const fulfillmentTotal = shippingTotal + handlingTotal;
+        // Fulfillment
+        const shippingTotal = parentFulfillmentGroup.shipmentMethod.rate || 0;
+        const handlingTotal = parentFulfillmentGroup.shipmentMethod.handling || 0;
+        const fulfillmentTotal = shippingTotal + handlingTotal;
 
-      // Totals
-      // To avoid rounding errors, be sure to keep this calculation the same between here and
-      // `buildOrderInputFromCart.js` in the client code.
-      const total = +accounting.toFixed(Math.max(0, itemTotal + fulfillmentTotal), 3);
+        // Totals
+        // To avoid rounding errors, be sure to keep this calculation the same between here and
+        // `buildOrderInputFromCart.js` in the client code.
+        const total = +accounting.toFixed(Math.max(0, itemTotal + fulfillmentTotal), 3);
 
-      const childInvoice = { ...parentFulfillmentGroup.invoice, subtotal: itemTotal, total }
-      let fulfillmentObj = {
-        ...parentFulfillmentGroup,
-        _id: Random.id(),
-        items: [item],
-        itemIds: [item._id],
-        totalItemQuantity: 1,
-        invoice: childInvoice
+        const childInvoice = { ...parentFulfillmentGroup.invoice, subtotal: itemTotal, total }
+        let fulfillmentObj = {
+          ...parentFulfillmentGroup,
+          _id: Random.id(),
+          items: [item],
+          itemIds: [item._id],
+          totalItemQuantity: 1,
+          invoice: childInvoice
 
-      }
-      const childFulfillmentGroup = [fulfillmentObj];
-      
-      const childOrder = {
-        ...order,
-        _id: Random.id(),
-        sellerId: key,
-        itemIds: [item._id],
-        referenceId: order.referenceId,
-        shipping: childFulfillmentGroup,
-        totalItemQuantity: childFulfillmentGroup.reduce((sum, group) => sum + group.totalItemQuantity, 0),
-        internalOrderId:order?.internalOrderId + (String.fromCharCode(97 + i))+String.fromCharCode(97 + j),
+        }
+        const childFulfillmentGroup = [fulfillmentObj];
+
+        const childOrder = {
+          ...order,
+          _id: Random.id(),
+          sellerId: key,
+          itemIds: [item._id],
+          referenceId: order.referenceId,
+          shipping: childFulfillmentGroup,
+          totalItemQuantity: childFulfillmentGroup.reduce((sum, group) => sum + group.totalItemQuantity, 0),
+          internalOrderId: order?.internalOrderId + (String.fromCharCode(97 + i)) + String.fromCharCode(97 + j),
 
 
-      }
-      // OrderSchema.validate(childOrder);
-      SubOrders.insertOne({ ...childOrder, parentId: order._id });
-    })
+        }
+        // OrderSchema.validate(childOrder);
+        SubOrders.insertOne({ ...childOrder, parentId: order._id });
+      })
     })
   }
   catch (err) {
@@ -98,6 +98,13 @@ async function updateChildOrdersStatus(context, order, itemId, sellerId, status)
     const { accountId, appEvents, collections, userId } = context;
     const { SubOrders } = collections;
     const SubOrderExist = await SubOrders.findOne({ "parentId": order?._id, itemIds: { $in: [itemId] } })
+
+    const orderDetails = order.shipping.find(group => group.itemIds.includes(itemId));
+
+    // console.log("orderDetails=====", orderDetails)
+    const itemDetails = orderDetails?.items.find(item => item._id === itemId);
+
+    // console.log("itemDetails==========", itemDetails)
     if (SubOrderExist != null) {
       let foundItem = false;
       const updatedGroups = SubOrderExist.shipping.map((group) => {
@@ -109,6 +116,10 @@ async function updateChildOrdersStatus(context, order, itemId, sellerId, status)
 
           const updatedItem = {
             ...item,
+            ...(itemDetails.cancelReason !== undefined && { cancelReason: itemDetails.cancelReason }),
+            ...(itemDetails.tracking !== undefined && { tracking: itemDetails.tracking }),
+            ...(itemDetails.courier_Name !== undefined && { courier_Name: itemDetails.courier_Name }),
+            ...(itemDetails.tracking_URL !== undefined && { tracking_URL: itemDetails.tracking_URL })
           };
 
           if (item.workflow.status !== status) {
