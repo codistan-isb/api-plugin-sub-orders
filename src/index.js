@@ -46,11 +46,11 @@ export default async function register(app) {
       startup: [startup]
     },
     graphQL: {
-      // resolvers,
+      resolvers,
       schemas
     },
     // mutations,
-    // queries,
+    queries,
     // policies,
     // simpleSchemas: {
     //   Order,
