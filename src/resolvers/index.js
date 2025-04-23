@@ -6,5 +6,5 @@ import OrderItem from "./OrderItem/index.js";
 export default {
   OrderItem,
   Query
-  
+
 };

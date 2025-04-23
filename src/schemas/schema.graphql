@@ -1,8 +1,7 @@
 extend type OrderItem {
-  subOrders:[SubOrderItem]
+  subOrders: [SubOrderItem]
 }
 extend type Query {
-
   "Get a sub order by its ID"
   suborderById(
     "The order ID"
@@ -29,6 +28,48 @@ extend type Query {
     "Return only results that come before this cursor. Use this with `last` to specify the number of results to return."
     before: ConnectionCursor
 
+    "Return at most this many results. This parameter may be used with either `after` or `offset` parameters."
+    first: ConnectionLimitInt
+
+    "Return at most this many results. This parameter may be used with the `before` parameter."
+    last: ConnectionLimitInt
+
+    "Return only results that come after the Nth result. This parameter may be used with the `first` parameter."
+    offset: Int
+
+    "Return results sorted in this order"
+    sortOrder: SortOrder = desc
+
+    "By default, orders are sorted by when they were created, newest first. Set this to sort by one of the other allowed fields"
+    sortBy: OrdersSortByField = createdAt
+  ): OrderConnection!
+
+  getSubOrders(
+    "Filters to apply to a list of orders"
+    filters: OrderFilterInput
+
+    "Provide a list of shop IDs from which you want to get orders from"
+    shopIds: [ID]
+
+    "Return only results that come after this cursor. Use this with `first` to specify the number of results to return."
+    after: ConnectionCursor
+
+    "Return only results that come before this cursor. Use this with `last` to specify the number of results to return."
+    before: ConnectionCursor
+
+    sellerId: String
+
+    internalOrderId: String
+
+    startDate: DateTime
+
+    endDate: DateTime
+
+    customerName: String
+
+    workflowStatus: String
+
+    orderId: String
     "Return at most this many results. This parameter may be used with either `after` or `offset` parameters."
     first: ConnectionLimitInt
 
@@ -347,16 +388,15 @@ type OrderSummary {
 }
 
 extend type uploadedBy {
-billingAddress:Address 
-email:String
+  billingAddress: Address
+  email: String
 }
 """
 A single item in an order. The item contains information about a purchase.
 """
 type SubOrderItem implements Node {
-
   "Seller Info"
-  uploadedBy :uploadedBy
+  uploadedBy: uploadedBy
 
   "The order item ID"
   _id: ID!
@@ -375,7 +415,7 @@ type SubOrderItem implements Node {
   options were chosen for some configurable attributes, then `color:blue` and `size:small` will be indicated here.
   """
   attributes: [OrderItemAttribute]
-  internalOrderId:String
+  internalOrderId: String
 
   "If this order item is canceled, the reason for cancelation, if provided"
   cancelReason: String
@@ -541,7 +581,7 @@ type SubOrderItem implements Node {
 # "An order"
 # type Order implements Node {
 #   parentOrder:ID
-  
+
 #   sellerInfo:uploadedBy
 
 #   "The Order ID"
