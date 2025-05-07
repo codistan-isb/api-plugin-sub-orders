@@ -95,7 +95,7 @@ async function createChildOrders(context, order) {
 
 async function updateChildOrdersStatus(context, order, itemId, sellerId, status) {
   try {
-    const { accountId, appEvents, collections, userId } = context;
+    const { appEvents, collections, userId } = context;
     const { SubOrders } = collections;
     const SubOrderExist = await SubOrders.findOne({ "parentId": order?._id, itemIds: { $in: [itemId] } })
 
@@ -119,7 +119,9 @@ async function updateChildOrdersStatus(context, order, itemId, sellerId, status)
             ...(itemDetails.cancelReason !== undefined && { cancelReason: itemDetails.cancelReason }),
             ...(itemDetails.tracking !== undefined && { tracking: itemDetails.tracking }),
             ...(itemDetails.courier_Name !== undefined && { courier_Name: itemDetails.courier_Name }),
-            ...(itemDetails.tracking_URL !== undefined && { tracking_URL: itemDetails.tracking_URL })
+            ...(itemDetails.tracking_URL !== undefined && { tracking_URL: itemDetails.tracking_URL }),
+            ...(itemDetails.pickupCharge !== undefined && { pickupCharge: itemDetails.pickupCharge }),
+            ...(itemDetails.pickupCharge !== undefined && { amountAfterPickupCharge: itemDetails.subtotal - itemDetails.pickupCharge })
           };
 
           if (item.workflow.status !== status) {
