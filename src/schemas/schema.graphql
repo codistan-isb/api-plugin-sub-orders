@@ -14,6 +14,8 @@ extend type Query {
     token: String
   ): Order
 
+  getOrderCounts: allOrdersCount
+
   "Get all sub orders for a single account, optionally limited to certain shop IDs and certain orderStatus"
   suborders(
     "Filters to apply to a list of orders"
@@ -275,6 +277,21 @@ type OrderConnection {
 
   "The total number of nodes that match your query"
   totalCount: Int!
+}
+
+type allOrdersCount {
+  totalChildOrders: Int
+  cancelledChildOrders: Int
+  completedChildOrders: Int
+  inProgressChildOrders: Int
+  totalBuyers: Int
+  totalSellers: Int
+  totalProducts: Int
+  soldProducts: Int
+  inStockProducts: Int
+  totalRevenue: Int
+  totalPickupCharges: Int
+  totalComission: Float
 }
 
 """
